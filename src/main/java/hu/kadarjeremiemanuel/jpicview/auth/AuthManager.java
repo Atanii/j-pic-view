@@ -10,6 +10,8 @@ import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.env.BasicIniEnvironment;
+import org.apache.shiro.env.Environment;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
@@ -39,9 +41,8 @@ public final class AuthManager {
 	}
 	
 	private void initSecurity() {
-		@SuppressWarnings("deprecation")
-		Factory<SecurityManager> factory = new IniSecurityManagerFactory(RES_PATH);
-        securityManager = factory.getInstance();
+		Environment env = new BasicIniEnvironment(RES_PATH);
+		securityManager = env.getSecurityManager();
         SecurityUtils.setSecurityManager(securityManager);
 	}
 	

@@ -31,7 +31,6 @@
 	    <groupId>org.apache.shiro</groupId>
 	    <artifactId>shiro-all</artifactId>
 	    <version>1.6.0</version>
-	    <type>pom</type>
 	</dependency>
     <dependency>
         <groupId>org.slf4j</groupId>
@@ -57,6 +56,19 @@
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+	        <archive>
+	          <manifest>
+	            <addClasspath>true</addClasspath>
+	            <classpathPrefix>lib/</classpathPrefix>
+	            <mainClass>hu.kadarjeremiemanuel.jpicview.App</mainClass>
+	          </manifest>
+	        </archive>
+	      </configuration>
+        </plugin>
+        <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
         </plugin>
@@ -80,19 +92,6 @@
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.2.0</version>
-          <configuration>
-	        <archive>
-	          <manifest>
-	            <addClasspath>true</addClasspath>
-	            <classpathPrefix>lib/</classpathPrefix>
-	            <mainClass>hu.kadarjeremiemanuel.jpicview.App</mainClass>
-	          </manifest>
-	        </archive>
-	      </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>

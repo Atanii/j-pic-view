@@ -1,17 +1,17 @@
 package hu.kadarjeremiemanuel.jpicview;
 
+import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
 import hu.kadarjeremiemanuel.jpicview.gui.MainWindow;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
 	private static MainWindow mw;
+	private static AuthManager am;
+	
     public static void main( String[] args )
     {
-        mw = new MainWindow();
+    	am = AuthManager.getInstance();
+        mw = new MainWindow(am, "JpicView");
         mw.setVisible(true);
     }
 }

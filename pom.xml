@@ -7,6 +7,8 @@
   <groupId>hu.kadarjeremiemanuel</groupId>
   <artifactId>jpicview</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  
+  <packaging>jar</packaging>
 
   <name>jpicview</name>
   <description>A simple jpicview.</description>
@@ -57,7 +59,16 @@
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
+          <version>3.2.0</version>
+          <configuration>
+	        <archive>
+	          <manifest>
+	            <addClasspath>true</addClasspath>
+	            <classpathPrefix>lib/</classpathPrefix>
+	            <mainClass>hu.kadarjeremiemanuel.jpicview.App</mainClass>
+	          </manifest>
+	        </archive>
+	      </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>

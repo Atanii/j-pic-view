@@ -6,10 +6,11 @@ package hu.kadarjeremiemanuel.jpicview.gui;
 import java.awt.Container;
 
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
 import hu.kadarjeremiemanuel.jpicview.gui.virtualdesktop.JpicDesktopPane;
-import hu.kadarjeremiemanuel.jpicview.utils.Strings;
+import hu.kadarjeremiemanuel.jpicview.utils.SharedValues;
 
 /**
  * @author atanii
@@ -31,14 +32,15 @@ public final class MainWindow extends JFrame {
 		Container contentPane = getContentPane();
 		
 		// properties
-		setSize(1024, 768);
-		setTitle(Strings.TITLE + "(NOT LOGGED IN)");
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		setSize(SharedValues.WIDTH, SharedValues.HEIGHT);
+		setTitle(SharedValues.TITLE + "(NOT LOGGED IN)");
 		
 		// settings
 		contentPane.add(dkPane);
 	}
 	
 	public void setTitlePostFix(String postfix) {
-		setTitle(Strings.TITLE + " " + postfix);
+		setTitle(SharedValues.TITLE + " " + postfix);
 	}
 }

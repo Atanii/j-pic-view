@@ -68,7 +68,6 @@ public final class LoginInternalFrame extends JInternalFrame {
 		});
 		
 		setSize(350, 100);
-		setVisible(true);
 	}
 	
 	private void Login(boolean asGuest) {

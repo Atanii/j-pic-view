@@ -81,6 +81,6 @@ public final class ImageBrowserInternalFrame extends JInternalFrame {
 			openImage();
 		});
 		
-		setSize(120, 206);
+		setSize(150, 300);
 	}
 }

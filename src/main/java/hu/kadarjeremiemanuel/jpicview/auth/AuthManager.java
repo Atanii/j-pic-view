@@ -14,6 +14,9 @@ import org.apache.shiro.env.Environment;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
+
+import hu.kadarjeremiemanuel.jpicview.utils.SharedValues;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -26,7 +29,6 @@ import java.sql.Statement;
 public final class AuthManager {
 	private static AuthManager instance;
 	
-	private static final String RES_PATH = "classpath:shiro.ini";
 	private SecurityManager securityManager;
 	private Subject user;
 	private Session userSess;
@@ -43,20 +45,19 @@ public final class AuthManager {
 	}
 	
 	private void initSecurity() {
-		Environment env = new BasicIniEnvironment(RES_PATH);
+		Environment env = new BasicIniEnvironment(SharedValues.SHIRO_INI_PATH);
 		securityManager = env.getSecurityManager();
         SecurityUtils.setSecurityManager(securityManager);
 	}
 	
-	private final static void checkDbConnection() {
+	private final void checkDbConnection() {
         Connection conn = null;
         try {
         	// Get JDBC
         	Class.forName("org.sqlite.JDBC");
         	
-        	// Get DB from Classpath
-            // https://github.com/xerial/sqlite-jdbc/blob/master/Usage.md#reading-database-files-in-classpaths-or-network-read-only
-            String url = "jdbc:sqlite::resource:users.db";
+        	// Get DB
+            String url = SharedValues.DBPATH;
             
             // Connect
             conn = DriverManager.getConnection(url);
@@ -68,9 +69,8 @@ public final class AuthManager {
             stmt.execute("SELECT * from user;");
             System.out.println("User table checked!");
             
-            stmt.execute("SELECT * from roles;");
-            System.out.println("Roles table checked!");
-            
+            stmt.execute("SELECT * from role;");
+            System.out.println("Role table checked!");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } catch (ClassNotFoundException e1) {

@@ -113,7 +113,7 @@ public final class JpicDesktopPane extends JDesktopPane {
 	
 	protected void updateUIOnCredentials() {
 		showLogoutScreen();
-		if (am.checkRole(RolesAndPermissions.BROWSE)) {
+		if (am.isAuth()) {
 			showImageBrowserScreen(path);
 		}
 	}

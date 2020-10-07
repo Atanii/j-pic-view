@@ -9,13 +9,15 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.env.BasicIniEnvironment;
 import org.apache.shiro.env.Environment;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.Factory;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * @author atanii
@@ -45,6 +47,44 @@ public final class AuthManager {
 		securityManager = env.getSecurityManager();
         SecurityUtils.setSecurityManager(securityManager);
 	}
+	
+	private final static void checkDbConnection() {
+        Connection conn = null;
+        try {
+        	// Get JDBC
+        	Class.forName("org.sqlite.JDBC");
+        	
+        	// Get DB from Classpath
+            // https://github.com/xerial/sqlite-jdbc/blob/master/Usage.md#reading-database-files-in-classpaths-or-network-read-only
+            String url = "jdbc:sqlite::resource:users.db";
+            
+            // Connect
+            conn = DriverManager.getConnection(url);
+            System.out.println("Connection to SQLite has been established.");
+            
+            // Testquery, it'll fail if there is no database or table.
+            Statement stmt = conn.createStatement();
+            
+            stmt.execute("SELECT * from user;");
+            System.out.println("User table checked!");
+            
+            stmt.execute("SELECT * from roles;");
+            System.out.println("Roles table checked!");
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } catch (ClassNotFoundException e1) {
+			e1.printStackTrace();
+		} finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
 	
 	private void setUserAndSession() {
 		user = SecurityUtils.getSubject();

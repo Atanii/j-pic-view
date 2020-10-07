@@ -6,9 +6,7 @@
 
   <groupId>hu.kadarjeremiemanuel</groupId>
   <artifactId>jpicview</artifactId>
-  <version>0.1.6-ALPHA</version>
-  
-  <packaging>jar</packaging>
+  <version>0.1.9-ALPHA</version>
 
   <name>jpicview</name>
   <description>A simple jpicview.</description>
@@ -20,8 +18,15 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
+  
+  <packaging>jar</packaging>
 
   <dependencies>
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.7.2</version>
+    </dependency>
 	<dependency>
 	    <groupId>org.apache.shiro</groupId>
 	    <artifactId>shiro-all</artifactId>

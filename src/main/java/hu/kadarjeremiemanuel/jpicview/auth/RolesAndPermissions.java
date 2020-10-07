@@ -7,22 +7,25 @@ package hu.kadarjeremiemanuel.jpicview.auth;
  * @author atanii
  *
  */
-public enum Roles {
+public enum RolesAndPermissions {
 	ADMIN("admin"), 
     GUEST("guest"), 
-    DOWNLOAD("download"), 
-    ALLVIEW("allview"),
+    BROWSE("browse"),
 	PNG("png"),
 	JPG("jpg"),
 	GIF("gif");
  
     private String role;
  
-    Roles(String roleName) {
+    RolesAndPermissions(String roleName) {
         this.role = roleName;
     }
  
     public String getRoleName() {
         return role;
+    }
+    
+    public String getViewPermission() {
+        return role + ":view";
     }
 }

@@ -3,11 +3,18 @@
  */
 package hu.kadarjeremiemanuel.jpicview.gui.virtualdesktop;
 
+import java.awt.FlowLayout;
+import java.beans.PropertyVetoException;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
+import javax.swing.JInternalFrame;
 
 import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
-import hu.kadarjeremiemanuel.jpicview.auth.Roles;
+import hu.kadarjeremiemanuel.jpicview.auth.RolesAndPermissions;
 import hu.kadarjeremiemanuel.jpicview.gui.MainWindow;
 
 /**
@@ -19,13 +26,16 @@ public final class JpicDesktopPane extends JDesktopPane {
 	private static MainWindow mw;
 	
 	private static LoginInternalFrame lw;
+	private static JInternalFrame logoutw;
 	private static ImageBrowserInternalFrame ibi;
+	private static List<ImageInternalFrame> openedImages;
 	
 	private static String path;
 	
 	public JpicDesktopPane(AuthManager am, MainWindow mw) {
 		this.am = am;
 		this.mw = mw;
+		openedImages = new LinkedList<>();
 		setDefaultWindowSet();
 		askForFolder();
 		showLoginScreen();
@@ -46,8 +56,30 @@ public final class JpicDesktopPane extends JDesktopPane {
 	}
 	
 	private void setDefaultWindowSet() {
+		// Login
 		lw = new LoginInternalFrame(am, this);
 		add(lw);
+		// Logout
+		logoutw = new JInternalFrame("Logout", false, false, false, true);
+		logoutw.setLayout(new FlowLayout());
+		JButton bttLogout = new JButton("Logout");
+		bttLogout.addActionListener(e -> {
+			try {
+				ibi.setClosed(true);
+				for(ImageInternalFrame iif : openedImages) {
+					iif.setClosed(true);
+				}
+				openedImages.clear();
+				am.logout();
+				logoutw.setVisible(false);
+				showLoginScreen();
+			} catch (PropertyVetoException e1) {
+				e1.printStackTrace();
+			}
+		});
+		logoutw.add(bttLogout);
+		logoutw.setSize(100, 70);
+		add(logoutw);
 	}
 	
 	public void setTitlePostFix(String postfix) {
@@ -55,11 +87,22 @@ public final class JpicDesktopPane extends JDesktopPane {
 	}
 	
 	protected void showImage(String path) {
-		add(new ImageInternalFrame(path));
+		ImageInternalFrame iif = new ImageInternalFrame(path);
+		openedImages.add(iif);
+		add(iif);
 	}
 	
 	private void showLoginScreen() {
 		lw.setVisible(true);
+	}
+	
+	private void showLogoutScreen() {
+		logoutw.setVisible(true);
+		try {
+			logoutw.setIcon(true);
+		} catch (PropertyVetoException e1) {
+			e1.printStackTrace();
+		}
 	}
 	
 	private void showImageBrowserScreen(String path) {
@@ -69,7 +112,8 @@ public final class JpicDesktopPane extends JDesktopPane {
 	}
 	
 	protected void updateUIOnCredentials() {
-		if (am.checkRole(Roles.GUEST)) {
+		showLogoutScreen();
+		if (am.checkRole(RolesAndPermissions.BROWSE)) {
 			showImageBrowserScreen(path);
 		}
 	}

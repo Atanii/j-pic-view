@@ -8,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,6 +23,7 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 
 import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
+import hu.kadarjeremiemanuel.jpicview.auth.RolesAndPermissions;
 import hu.kadarjeremiemanuel.jpicview.utils.SharedValues;
 
 /**
@@ -33,7 +35,7 @@ public final class ImageBrowserInternalFrame extends JInternalFrame {
 	private static JpicDesktopPane dp;
 	
 	private static File dir;
-	private static String[] files;
+	private static File[] files;
 	
 	private JList fileList;
 	private JButton bttOpen;
@@ -52,23 +54,38 @@ public final class ImageBrowserInternalFrame extends JInternalFrame {
 	private void readFiles() {
 		dir = new File(path);
 		if (dir.exists() && dir.isDirectory()) {
-			files = dir.list();
+			files = dir.listFiles(new FileFilter() {
+				
+				@Override
+				public boolean accept(File pathname) {
+					String name = pathname.getName();
+					int index = name.lastIndexOf('.');
+					if(index > 0) {
+						String extension = name.substring(index + 1);
+						if ( (extension.equals("png") && am.checkPermission(RolesAndPermissions.PNG.getViewPermission()))
+						 ||  (extension.equals("jpg") && am.checkPermission(RolesAndPermissions.JPG.getViewPermission()))
+						 ||  (extension.equals("gif") && am.checkPermission(RolesAndPermissions.GIF.getViewPermission()))) {
+							return true;
+						}
+					}
+					return false;
+				}
+			});
 		}
 	}
 	
 	private void openImage() {
-		String selectedFile = (String) this.fileList.getSelectedValue();
-		System.out.println(dir.getAbsoluteFile() + "\\" + selectedFile);
-		dp.showImage(dir.getAbsoluteFile() + "\\" + selectedFile);
+		File selectedFile = (File) this.fileList.getSelectedValue();
+		dp.showImage(selectedFile.getAbsolutePath());
 	}
 	
 	private void initUI() {
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		
-		fileList = new JList<String>(files);
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.anchor = GridBagConstraints.PAGE_START;
+		fileList = new JList<File>(files);
+		c.fill = GridBagConstraints.BOTH;
+		c.anchor = GridBagConstraints.CENTER;
 		c.gridx = 0;
 		c.gridy = 0;
 		add(new JScrollPane(fileList), c);
@@ -84,6 +101,6 @@ public final class ImageBrowserInternalFrame extends JInternalFrame {
 			openImage();
 		});
 		
-		setSize(150, 300);
+		setSize(300, 300);
 	}
 }

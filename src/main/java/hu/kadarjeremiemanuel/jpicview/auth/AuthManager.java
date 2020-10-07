@@ -87,7 +87,7 @@ public final class AuthManager {
 		return user.hasRole(role);
 	}
 	
-	public boolean checkRole(Roles role) {
+	public boolean checkRole(RolesAndPermissions role) {
 		return user.hasRole(role.getRoleName());
 	}
 	

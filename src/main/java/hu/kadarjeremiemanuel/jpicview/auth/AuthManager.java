@@ -17,11 +17,6 @@ import org.apache.shiro.subject.Subject;
 
 import hu.kadarjeremiemanuel.jpicview.utils.SharedValues;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 /**
  * @author atanii
  *
@@ -49,42 +44,6 @@ public final class AuthManager {
 		securityManager = env.getSecurityManager();
         SecurityUtils.setSecurityManager(securityManager);
 	}
-	
-	private final void checkDbConnection() {
-        Connection conn = null;
-        try {
-        	// Get JDBC
-        	Class.forName("org.sqlite.JDBC");
-        	
-        	// Get DB
-            String url = SharedValues.DBPATH;
-            
-            // Connect
-            conn = DriverManager.getConnection(url);
-            System.out.println("Connection to SQLite has been established.");
-            
-            // Testquery, it'll fail if there is no database or table.
-            Statement stmt = conn.createStatement();
-            
-            stmt.execute("SELECT * from user;");
-            System.out.println("User table checked!");
-            
-            stmt.execute("SELECT * from role;");
-            System.out.println("Role table checked!");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
-		} finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-    }
 	
 	private void setUserAndSession() {
 		user = SecurityUtils.getSubject();

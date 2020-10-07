@@ -6,7 +6,7 @@
 
   <groupId>hu.kadarjeremiemanuel</groupId>
   <artifactId>jpicview</artifactId>
-  <version>0.1.5-ALPHA</version>
+  <version>0.1.6-ALPHA</version>
   
   <packaging>jar</packaging>
 
@@ -22,11 +22,6 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-    </dependency>
 	<dependency>
 	    <groupId>org.apache.shiro</groupId>
 	    <artifactId>shiro-all</artifactId>
@@ -50,11 +45,22 @@
         <scope>runtime</scope>
         <version>1.2.17</version>
     </dependency>
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>5.3.1</version>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
+      	<plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.22.0</version>
+        </plugin>
       	<plugin>
 		    <artifactId>maven-assembly-plugin</artifactId>
 		    <version>2.2-beta-5</version>
@@ -69,19 +75,6 @@
 		        </descriptorRefs>
 		    </configuration>
 		</plugin>
-<!--         <plugin> -->
-<!--           <artifactId>maven-jar-plugin</artifactId> -->
-<!--           <version>3.2.0</version> -->
-<!--           <configuration> -->
-<!-- 	        <archive> -->
-<!-- 	          <manifest> -->
-<!-- 	            <addClasspath>true</addClasspath> -->
-<!-- 	            <classpathPrefix>lib/</classpathPrefix> -->
-<!-- 	            <mainClass>hu.kadarjeremiemanuel.jpicview.App</mainClass> -->
-<!-- 	          </manifest> -->
-<!-- 	        </archive> -->
-<!-- 	      </configuration> -->
-<!--         </plugin> -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
@@ -102,10 +95,6 @@
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>

@@ -6,10 +6,15 @@ package hu.kadarjeremiemanuel.jpicview.gui.virtualdesktop;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
@@ -33,23 +38,21 @@ public final class ImageBrowserInternalFrame extends JInternalFrame {
 	private JList fileList;
 	private JButton bttOpen;
 	
-	public ImageBrowserInternalFrame(AuthManager am, JpicDesktopPane dp) {
+	private static String path;
+	
+	public ImageBrowserInternalFrame(AuthManager am, JpicDesktopPane dp, String path) {
 		super("Available Images", true, false, true, true);
 		this.am = am;
 		this.dp = dp;
+		this.path = path;
 		readFiles();
 		initUI();
 	}
 	
 	private void readFiles() {
-		try {
-			URI imagesRes = Thread.currentThread().getContextClassLoader().getResource(SharedValues.IMAGE_DIR_CLASSPATH).toURI();
-			if (imagesRes != null) {
-				dir = new File(imagesRes);
-				files = dir.list();
-			}
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+		dir = new File(path);
+		if (dir.exists() && dir.isDirectory()) {
+			files = dir.list();
 		}
 	}
 	

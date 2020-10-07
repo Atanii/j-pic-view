@@ -55,19 +55,33 @@
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.2.0</version>
-          <configuration>
-	        <archive>
-	          <manifest>
-	            <addClasspath>true</addClasspath>
-	            <classpathPrefix>lib/</classpathPrefix>
-	            <mainClass>hu.kadarjeremiemanuel.jpicview.App</mainClass>
-	          </manifest>
-	        </archive>
-	      </configuration>
-        </plugin>
+      	<plugin>
+		    <artifactId>maven-assembly-plugin</artifactId>
+		    <version>2.2-beta-5</version>
+		    <configuration>
+		        <archive>
+		            <manifest>
+		                <mainClass>hu.kadarjeremiemanuel.jpicview.App</mainClass>
+		            </manifest>
+		        </archive>
+		        <descriptorRefs>
+		            <descriptorRef>jar-with-dependencies</descriptorRef>
+		        </descriptorRefs>
+		    </configuration>
+		</plugin>
+<!--         <plugin> -->
+<!--           <artifactId>maven-jar-plugin</artifactId> -->
+<!--           <version>3.2.0</version> -->
+<!--           <configuration> -->
+<!-- 	        <archive> -->
+<!-- 	          <manifest> -->
+<!-- 	            <addClasspath>true</addClasspath> -->
+<!-- 	            <classpathPrefix>lib/</classpathPrefix> -->
+<!-- 	            <mainClass>hu.kadarjeremiemanuel.jpicview.App</mainClass> -->
+<!-- 	          </manifest> -->
+<!-- 	        </archive> -->
+<!-- 	      </configuration> -->
+<!--         </plugin> -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>

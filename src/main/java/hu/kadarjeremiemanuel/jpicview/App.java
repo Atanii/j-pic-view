@@ -1,5 +1,7 @@
 package hu.kadarjeremiemanuel.jpicview;
 
+import java.awt.EventQueue;
+
 import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
 import hu.kadarjeremiemanuel.jpicview.gui.MainWindow;
 
@@ -10,8 +12,10 @@ public class App
 	
     public static void main( String[] args )
     {
-    	am = AuthManager.getInstance();
-        mw = new MainWindow(am, "JpicView");
-        mw.setVisible(true);
+    	EventQueue.invokeLater(() -> {
+    		am = AuthManager.getInstance();
+            mw = new MainWindow(am, "JpicView");
+            mw.setVisible(true);
+        });
     }
 }

@@ -26,6 +26,11 @@ import hu.kadarjeremiemanuel.jpicview.gui.MainWindow;
  *
  */
 public final class JpicDesktopPane extends JDesktopPane {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private static AuthManager am;
 	private static MainWindow mw;
 	
@@ -45,8 +50,9 @@ public final class JpicDesktopPane extends JDesktopPane {
 		openedImages = new LinkedList<>();
 		setWallpaper();
 		setDefaultWindowSet();
-		askForFolder();
-		showLoginScreen();
+		showAdminControlPanelScreen();
+		/*askForFolder();
+		showLoginScreen();*/
 	}
 	
 	private void setWallpaper() {
@@ -89,13 +95,13 @@ public final class JpicDesktopPane extends JDesktopPane {
 			try {
 				ibi.setClosed(true);
 				for(ImageInternalFrame iif : openedImages) {
-					iif.setClosed(true);
+					iif.dispose();
 				}
 				openedImages.clear();
 				am.logout();
 				logoutw.setVisible(false);
 				if (acif != null) {
-					acif.setClosed(true);
+					acif.dispose();
 				}
 				showLoginScreen();
 			} catch (PropertyVetoException e1) {
@@ -148,6 +154,10 @@ public final class JpicDesktopPane extends JDesktopPane {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	protected void showUserEditorScreen(String username) {
+		
 	}
 	
 	protected void updateUIOnCredentials() {

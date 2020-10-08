@@ -3,16 +3,17 @@
  */
 package hu.kadarjeremiemanuel.jpicview.gui.virtualdesktop;
 
-import java.awt.FlowLayout;
-import java.util.List;
-
+import java.awt.Dimension;
+import java.beans.PropertyVetoException;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
-import hu.kadarjeremiemanuel.jpicview.bean.UserRoleModel;
 import hu.kadarjeremiemanuel.jpicview.db.DatabaseHandler;
 
 /**
@@ -20,9 +21,15 @@ import hu.kadarjeremiemanuel.jpicview.db.DatabaseHandler;
  *
  */
 public final class AdminControlInternalFrame extends JInternalFrame {
-	private JTable table;
-	private static AuthManager am;
-	private static JpicDesktopPane dp;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private JTable tUserRoleMatrix;
+	private AuthManager am;
+	private JpicDesktopPane dp;
+	private Object[][] data;
 	
 	public AdminControlInternalFrame(AuthManager am, JpicDesktopPane dp) {
 		super("Admin Controlpanel (under implementation)", true, false, true, true);
@@ -31,11 +38,11 @@ public final class AdminControlInternalFrame extends JInternalFrame {
 		initUI();
 	}
 	
-	private void setTable() {
-		Object[] columnNames = {"ID", "Username", "Rolename"};
-        Object[][] data = DatabaseHandler.getUserRoles();
-        DefaultTableModel model = new DefaultTableModel(data, columnNames);
-        table = new JTable(model) {
+	private JComponent getUserRoleMatrixTable() {
+		Object[] columnNames = {"Username", "Role", "Description"};
+        data = DatabaseHandler.getUserRoleMatrix();
+        var model = new DefaultTableModel(data, columnNames);
+        tUserRoleMatrix = new JTable(model) {
             private static final long serialVersionUID = 1L;
             
             @Override
@@ -51,13 +58,67 @@ public final class AdminControlInternalFrame extends JInternalFrame {
                 }
             }
         };
-        table.setPreferredScrollableViewportSize(table.getPreferredSize());
-        JScrollPane scrollPane = new JScrollPane(table);
-        add(scrollPane);
+        tUserRoleMatrix.setPreferredScrollableViewportSize(tUserRoleMatrix.getPreferredSize());
+        var scrollPane = new JScrollPane(tUserRoleMatrix);
+        return scrollPane;
+	}
+	
+	private void editUser() {
+		int row = tUserRoleMatrix.getSelectedRow();
+		if (row != -1) {
+			String username = String.valueOf(data[row][0]);
+			dp.showUserEditorScreen(username);
+			try {
+				setIcon(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private void initUI() {
-		setTable();
-		setSize(800, 600);
-	}
+        var pane = getContentPane();
+        var gl = new GroupLayout(pane);
+        pane.setLayout(gl);
+        
+        var table = getUserRoleMatrixTable();
+        var bttNew = new JButton("New User");
+		bttNew.addActionListener(e -> {
+			editUser();
+		});
+        var bttEdit = new JButton("Edit User");
+		bttEdit.addActionListener(e -> {
+			editUser();
+		});
+		var bttDelete = new JButton("Delete User");
+		bttDelete.addActionListener(e -> {
+			editUser();
+		});
+		
+		gl.setVerticalGroup(
+				gl.createParallelGroup()
+				.addGroup(
+						gl.createSequentialGroup()
+						.addComponent(table, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(bttEdit)
+				)
+		);
+		
+		gl.setHorizontalGroup(
+				gl.createSequentialGroup()
+				.addGroup(
+						gl.createParallelGroup(GroupLayout.Alignment.LEADING)
+						.addComponent(table)
+						.addComponent(bttEdit)
+				)
+		);
+		
+        gl.setAutoCreateContainerGaps(true);
+        gl.setAutoCreateGaps(true);
+        
+        var headerSize = getInsets().top;
+        setPreferredSize(new Dimension(getPreferredSize().width, getPreferredSize().height + headerSize * 3));
+        
+        pack();
+    }
 }

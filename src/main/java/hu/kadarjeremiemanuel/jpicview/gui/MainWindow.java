@@ -24,6 +24,8 @@ public final class MainWindow extends JFrame {
 		this.am = am;
 		setTitle(title);
 		setPane();
+		setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	private void setPane() {

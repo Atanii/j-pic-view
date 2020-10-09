@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/GIT/j-pic-view/src/main/resources/users.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1971"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,4:mainuser"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="permission" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="44"/><column index="3" value="43"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="role" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="2" mode="1"/></sort><column_widths><column index="1" value="40"/><column index="2" value="68"/><column index="3" value="169"/><column index="4" value="80"/><column index="5" value="281"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="roles" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="51"/><column index="2" value="127"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="sqlite_sequence" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="43"/><column index="2" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="user" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="3" mode="0"/></sort><column_widths><column index="1" value="40"/><column index="2" value="72"/><column index="3" value="71"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="user_role" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="2" mode="0"/></sort><column_widths><column index="1" value="40"/><column index="2" value="146"/><column index="3" value="179"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="user_role_matrix" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="72"/><column index="2" value="80"/><column index="3" value="220"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="ShiroQueries">/*
+  SELECT password FROM user WHERE username = &quot;admin&quot;;
+  SELECT rolename FROM user_role WHERE username = &quot;admin&quot;;
+  SELECT permission FROM role WHERE rolename = &quot;guest&quot;;
+
+select distinct
+ a.username as &quot;Username&quot;,
+ b.rolename as &quot;Administrator&quot;,
+ c.rolename as &quot;Guest user&quot;,
+ d.rolename as &quot;GIF&quot;,
+ e.rolename as &quot;jpg&quot;,
+ f.rolename as &quot;png&quot;
+from user as a
+ left join user_role as b on a.username = b.username and b.rolename = &quot;admin&quot;
+ left join user_role as c on a.username = c.username and c.rolename = &quot;guest&quot;
+ left join user_role as d on a.username = d.username and d.rolename = &quot;gif&quot;
+ left join user_role as e on a.username = e.username and e.rolename = &quot;jpg&quot;
+ left join user_role as f on a.username = f.username and f.rolename = &quot;png&quot;
+*/
+
+DELETE FROM user WHERE username = &quot;dummy4&quot; AND username != &quot;admin&quot; AND username != &quot;guest&quot;;
+SELECT * from role;
+/*
+INSERT INTO user (username, password) VALUES (?, ?);
+INSERT INTO user_role (username, rolename) VALUES (?, ?);
+*/
+/*
+UPDATE user SET username = &quot;dummy1&quot; WHERE username = &quot;ultimate dummy&quot; AND username != &quot;admin&quot; AND username != &quot;guest&quot;;
+UPDATE user_role SET rolename = &quot;guest&quot; WHERE username = &quot;ultimate dummy&quot; AND username != &quot;admin&quot; AND username != &quot;guest&quot; AND rolename != &quot;admin&quot; AND rolename != &quot;guest&quot;;
+*/
+
+SELECT username, rolename from user_role WHERE username = &quot;guest&quot;;
+
+UPDATE user SET username = ? WHERE username = ? AND username != &quot;admin&quot; AND username != &quot;guest&quot;;
+UPDATE user_role SET rolename = ? WHERE username = ? AND username != &quot;admin&quot; AND username != &quot;guest&quot; AND rolename != &quot;admin&quot; AND rolename != &quot;guest&quot;;
+
+INSERT INTO user (username, password) 
+VALUES 
+	(&quot;dummy1&quot;, &quot;dummy&quot;),
+	(&quot;dummy2&quot;, &quot;dummy&quot;),
+	(&quot;dummy3&quot;, &quot;dummy&quot;),
+	(&quot;dummy4&quot;, &quot;dummy&quot;),
+	(&quot;dummy5&quot;, &quot;dummy&quot;);
+
+INSERT INTO user_role (username, rolename) 
+VALUES 
+	(&quot;dummy1&quot;, &quot;png&quot;),
+	(&quot;dummy2&quot;, &quot;jpg&quot;),
+	(&quot;dummy3&quot;, &quot;gif&quot;),
+	(&quot;dummy4&quot;, &quot;regular&quot;),
+	(&quot;dummy5&quot;, &quot;regular&quot;);</sql><sql name="CREATE user_role_matrix viewtable">CREATE VIEW IF NOT EXISTS user_role_matrix
+AS 
+select distinct
+	a.username as &quot;Username&quot;,
+	c.fullname as &quot;Role&quot;,
+	c.description as &quot;Description&quot;
+from user as a, user_role as b
+	left join role as c where a.username = b.username and b.rolename = c.rolename</sql><sql name="SQL 4">CREATE TRIGGER IF NOT EXISTS username_chng
+INSTEAD OF UPDATE OF username ON user
+BEGIN
+  UPDATE user SET username=NEW.username
+   WHERE username != &quot;admin&quot; AND username != &quot;guest&quot;;
+END;</sql><current_tab id="0"/></tab_sql></sqlb_project>

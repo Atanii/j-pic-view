@@ -31,18 +31,19 @@ public final class JpicDesktopPane extends JDesktopPane {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static AuthManager am;
-	private static MainWindow mw;
+	private AuthManager am;
+	private MainWindow mw;
 	
-	private static LoginInternalFrame lw;
-	private static JInternalFrame logoutw;
-	private static ImageBrowserInternalFrame ibi;
-	private static AdminControlInternalFrame acif;
-	private static List<ImageInternalFrame> openedImages;
+	private LoginInternalFrame lw;
+	private JInternalFrame logoutw;
+	private ImageBrowserInternalFrame ibi;
+	private AdminControlInternalFrame acif;
+	private UserEditorInternalFrame ueif; 
+	private List<ImageInternalFrame> openedImages;
 	
-	private static String path;
+	private String path;
 	
-	private static BufferedImage wallpaper;
+	private BufferedImage wallpaper;
 	
 	public JpicDesktopPane(AuthManager am, MainWindow mw) {
 		this.am = am;
@@ -50,9 +51,8 @@ public final class JpicDesktopPane extends JDesktopPane {
 		openedImages = new LinkedList<>();
 		setWallpaper();
 		setDefaultWindowSet();
-		showAdminControlPanelScreen();
-		/*askForFolder();
-		showLoginScreen();*/
+		askForFolder();
+		showLoginScreen();
 	}
 	
 	private void setWallpaper() {
@@ -103,6 +103,9 @@ public final class JpicDesktopPane extends JDesktopPane {
 				if (acif != null) {
 					acif.dispose();
 				}
+				if (ueif != null) {
+					ueif.dispose();
+				}
 				showLoginScreen();
 			} catch (PropertyVetoException e1) {
 				e1.printStackTrace();
@@ -150,7 +153,6 @@ public final class JpicDesktopPane extends JDesktopPane {
 			try {
 				ibi.setIcon(true);
 			} catch (PropertyVetoException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -158,6 +160,12 @@ public final class JpicDesktopPane extends JDesktopPane {
 	
 	protected void showUserEditorScreen(String username) {
 		
+	}
+	
+	protected void showUserAddScreen() {	
+		ueif = new UserEditorInternalFrame(am);
+		add(ueif);
+		ueif.setVisible(true);
 	}
 	
 	protected void updateUIOnCredentials() {

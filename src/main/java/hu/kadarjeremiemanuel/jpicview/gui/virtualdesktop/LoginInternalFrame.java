@@ -12,6 +12,7 @@ import java.awt.LayoutManager;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
@@ -21,17 +22,16 @@ import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
  *
  */
 public final class LoginInternalFrame extends JInternalFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private static AuthManager am;
 	private static JpicDesktopPane dp;
 	
-	private JLabel lName;
-	private JLabel lPswd;
-	
 	private JTextField tfName;
-	private JTextField tfPswd;
-	
-	private JButton bttGuest;
-	private JButton bttOk;
+	private JPasswordField tfPswd;
 	
 	public LoginInternalFrame(AuthManager am, JpicDesktopPane dp) {
 		super("Login", false, false, false, true);
@@ -44,19 +44,19 @@ public final class LoginInternalFrame extends JInternalFrame {
 		GridLayout gl = new GridLayout(3, 2);
 		setLayout(gl);
 		
-		lName = new JLabel("Username");
+		var lName = new JLabel("Username");
 		add(lName);
 		tfName = new JTextField();
 		add(tfName);
 		
-		lPswd = new JLabel("Password");
+		var lPswd = new JLabel("Password");
 		add(lPswd);
-		tfPswd = new JTextField();
+		tfPswd = new JPasswordField();
 		add(tfPswd);
 		
-		bttGuest = new JButton("Continue As Guest");
+		var bttGuest = new JButton("Continue As Guest");
 		add(bttGuest);
-		bttOk = new JButton("Confirm");
+		var bttOk = new JButton("Confirm");
 		add(bttOk);
 		
 		bttGuest.addActionListener(e -> {
@@ -78,9 +78,9 @@ public final class LoginInternalFrame extends JInternalFrame {
 				this.setVisible(false);
 			}
 		}
-		else if (tfName.getText() != null && tfPswd.getText() != null) {
+		else if (tfName.getText() != null && tfPswd.getPassword() != null) {
 			String name = tfName.getText();
-			String pswd = tfPswd.getText();
+			String pswd = String.valueOf(tfPswd.getPassword());
 			if (am.login(name, pswd)) {
 				dp.updateUIOnCredentials();
 				dp.setTitlePostFix("(LOGGED IN AS '" + name + "')");

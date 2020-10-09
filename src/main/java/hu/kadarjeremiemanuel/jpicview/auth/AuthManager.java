@@ -3,6 +3,8 @@
  */
 package hu.kadarjeremiemanuel.jpicview.auth;
 
+import javax.swing.JOptionPane;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -64,18 +66,18 @@ public final class AuthManager {
                 user.login(token);
                 res = isAuth();
             } catch (UnknownAccountException uae) {
-                System.out.println("There is no user with username of " + token.getPrincipal());
+            	JOptionPane.showMessageDialog(null, "There is no user with username of " + token.getPrincipal(), "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             } catch (IncorrectCredentialsException ice) {
-            	System.out.println("Password for account " + token.getPrincipal() + " was incorrect!");
+            	JOptionPane.showMessageDialog(null, "Password for account " + token.getPrincipal() + " was incorrect!", "Error", JOptionPane.ERROR_MESSAGE);
             	return false;
             } catch (LockedAccountException lae) {
-            	System.out.println("The account for username " + token.getPrincipal() + " is locked.  " +
-                        "Please contact your administrator to unlock it.");
+            	JOptionPane.showMessageDialog(null, "The account for username " + token.getPrincipal() + " is locked.  " +
+                        "Please contact your administrator to unlock it.", "Error", JOptionPane.ERROR_MESSAGE);
             	return false;
             }
             catch (AuthenticationException ex) {
-            	System.out.println("Unexpected error: " + token.getPrincipal());
+            	JOptionPane.showMessageDialog(null, "Unexpected error: " + token.getPrincipal(), "Error", JOptionPane.ERROR_MESSAGE);
             	return false;
             }
         }
@@ -83,14 +85,17 @@ public final class AuthManager {
 	}
 	
 	public boolean checkRole(String role) {
+		setUserAndSession();
 		return user.hasRole(role);
 	}
 	
 	public boolean checkRole(RolesAndPermissions role) {
+		setUserAndSession();
 		return user.hasRole(role.getRoleName());
 	}
 	
 	public boolean checkPermission(String permission) {
+		setUserAndSession();
 		return user.isPermitted(permission);
 	}
 	

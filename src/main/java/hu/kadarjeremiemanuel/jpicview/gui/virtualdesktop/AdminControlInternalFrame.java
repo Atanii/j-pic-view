@@ -4,13 +4,14 @@
 package hu.kadarjeremiemanuel.jpicview.gui.virtualdesktop;
 
 import java.awt.Dimension;
-import java.beans.PropertyVetoException;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
@@ -38,15 +39,18 @@ public final class AdminControlInternalFrame extends JInternalFrame {
 		initUI();
 	}
 	
-	private JComponent getUserRoleMatrixTable() {
+	private DefaultTableModel getModel() {
 		Object[] columnNames = {"Username", "Role", "Description"};
-        data = DatabaseHandler.getUserRoleMatrix();
-        var model = new DefaultTableModel(data, columnNames);
-        tUserRoleMatrix = new JTable(model) {
+        data = DatabaseHandler.getUserRoleMatrix(this.am);
+        return new DefaultTableModel(data, columnNames);
+	}
+	
+	private JComponent getUserRoleMatrixTable() {
+        tUserRoleMatrix = new JTable(getModel()) {
             private static final long serialVersionUID = 1L;
             
             @Override
-            public Class getColumnClass(int column) {
+            public Class<?> getColumnClass(int column) {
                 switch (column) {
                     case 0:
                         return Integer.class;
@@ -58,9 +62,16 @@ public final class AdminControlInternalFrame extends JInternalFrame {
                 }
             }
         };
+        
+        tUserRoleMatrix.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tUserRoleMatrix.setPreferredScrollableViewportSize(tUserRoleMatrix.getPreferredSize());
+        
         var scrollPane = new JScrollPane(tUserRoleMatrix);
         return scrollPane;
+	}
+	
+	private void newUser() {
+		dp.showUserAddScreen();
 	}
 	
 	private void editUser() {
@@ -68,12 +79,19 @@ public final class AdminControlInternalFrame extends JInternalFrame {
 		if (row != -1) {
 			String username = String.valueOf(data[row][0]);
 			dp.showUserEditorScreen(username);
-			try {
-				setIcon(true);
-			} catch (PropertyVetoException e) {
-				e.printStackTrace();
-			}
 		}
+	}
+	
+	private void deleteUser() {
+		int row = tUserRoleMatrix.getSelectedRow();
+		if (row != -1 && JOptionPane.showConfirmDialog(null, "Are you sure?") == 0) {
+			String username = String.valueOf(data[row][0]);
+			DatabaseHandler.deleteUser(username, this.am);
+		}
+	}
+	
+	private void refresh() {
+		this.tUserRoleMatrix.setModel(getModel());
 	}
 	
 	private void initUI() {
@@ -82,9 +100,10 @@ public final class AdminControlInternalFrame extends JInternalFrame {
         pane.setLayout(gl);
         
         var table = getUserRoleMatrixTable();
+        
         var bttNew = new JButton("New User");
 		bttNew.addActionListener(e -> {
-			editUser();
+			newUser();
 		});
         var bttEdit = new JButton("Edit User");
 		bttEdit.addActionListener(e -> {
@@ -92,7 +111,11 @@ public final class AdminControlInternalFrame extends JInternalFrame {
 		});
 		var bttDelete = new JButton("Delete User");
 		bttDelete.addActionListener(e -> {
-			editUser();
+			deleteUser();
+		});
+		var bttRefresh = new JButton("Refresh");
+		bttRefresh.addActionListener(e -> {
+			refresh();
 		});
 		
 		gl.setVerticalGroup(
@@ -100,7 +123,13 @@ public final class AdminControlInternalFrame extends JInternalFrame {
 				.addGroup(
 						gl.createSequentialGroup()
 						.addComponent(table, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(bttEdit)
+						.addGroup(
+								gl.createParallelGroup()
+								.addComponent(bttNew)
+								.addComponent(bttEdit)
+								.addComponent(bttDelete)
+								.addComponent(bttRefresh)
+						)
 				)
 		);
 		
@@ -109,7 +138,13 @@ public final class AdminControlInternalFrame extends JInternalFrame {
 				.addGroup(
 						gl.createParallelGroup(GroupLayout.Alignment.LEADING)
 						.addComponent(table)
-						.addComponent(bttEdit)
+						.addGroup(
+								gl.createSequentialGroup()
+								.addComponent(bttNew)
+								.addComponent(bttEdit)
+								.addComponent(bttDelete)
+								.addComponent(bttRefresh)
+						)
 				)
 		);
 		

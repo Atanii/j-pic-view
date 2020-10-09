@@ -6,7 +6,7 @@
 
   <groupId>hu.kadarjeremiemanuel</groupId>
   <artifactId>jpicview</artifactId>
-  <version>0.1.9.9-ALPHA</version>
+  <version>0.2.0.0-BETA</version>
 
   <name>JpicView</name>
   <description>Java picviewer app with Apache Shiro auth and MDI GUI.</description>

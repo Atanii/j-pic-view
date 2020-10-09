@@ -14,11 +14,11 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
-import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
 
 import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
-import hu.kadarjeremiemanuel.jpicview.auth.RolesAndPermissions;
+import hu.kadarjeremiemanuel.jpicview.auth.RolesEnum;
 import hu.kadarjeremiemanuel.jpicview.gui.MainWindow;
 
 /**
@@ -51,7 +51,6 @@ public final class JpicDesktopPane extends JDesktopPane {
 		openedImages = new LinkedList<>();
 		setWallpaper();
 		setDefaultWindowSet();
-		askForFolder();
 		showLoginScreen();
 	}
 	
@@ -69,20 +68,6 @@ public final class JpicDesktopPane extends JDesktopPane {
         grphcs.drawImage(wallpaper, 0, 0, null);
     }
 	
-	private void askForFolder() {
-		JFileChooser jfc = new JFileChooser();
-		
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		jfc.setDialogTitle("Choose a directory with images (the program will exit if you cancel)");
-		
-		int res = jfc.showSaveDialog(null); 
-        if (res == JFileChooser.APPROVE_OPTION) { 
-            path = jfc.getSelectedFile().getAbsolutePath();
-        } else {
-        	System.exit(0);
-        }
-	}
-	
 	private void setDefaultWindowSet() {
 		// Login
 		lw = new LoginInternalFrame(am, this);
@@ -90,30 +75,20 @@ public final class JpicDesktopPane extends JDesktopPane {
 		// Logout
 		logoutw = new JInternalFrame("Logout", false, false, false, true);
 		logoutw.setLayout(new FlowLayout());
-		JButton bttLogout = new JButton("Logout");
+		var bttLogout = new JButton("Logout");
 		bttLogout.addActionListener(e -> {
-			try {
-				ibi.setClosed(true);
-				for(ImageInternalFrame iif : openedImages) {
-					iif.dispose();
-				}
-				openedImages.clear();
-				am.logout();
-				logoutw.setVisible(false);
-				if (acif != null) {
-					acif.dispose();
-				}
-				if (ueif != null) {
-					ueif.dispose();
-				}
-				showLoginScreen();
-			} catch (PropertyVetoException e1) {
-				e1.printStackTrace();
-			}
+			reset();
 		});
 		logoutw.add(bttLogout);
 		logoutw.setSize(100, 70);
 		add(logoutw);
+	}
+	
+	private void reset() {
+		removeAll();
+		updateUI();
+		setDefaultWindowSet();
+		showLoginScreen();
 	}
 	
 	public void setTitlePostFix(String postfix) {
@@ -121,7 +96,7 @@ public final class JpicDesktopPane extends JDesktopPane {
 	}
 	
 	protected void showImage(String path) {
-		ImageInternalFrame iif = new ImageInternalFrame(path);
+		var iif = new ImageInternalFrame(path);
 		openedImages.add(iif);
 		add(iif);
 	}
@@ -140,16 +115,29 @@ public final class JpicDesktopPane extends JDesktopPane {
 	}
 	
 	private void showAdminControlPanelScreen() {
-		acif = new AdminControlInternalFrame(am, this);
-		add(acif);
-		acif.setVisible(true);
+		if (am.checkRole(RolesEnum.ADMIN)) {
+			acif = new AdminControlInternalFrame(am, this);
+			add(acif);
+			acif.setVisible(true);
+		} else {
+			JOptionPane.showMessageDialog(
+					null,
+					"Only administrators are permitted to access this menu!",
+					"Security",
+					JOptionPane.ERROR_MESSAGE
+			);
+		}
+	}
+	
+	protected void setPath(String path) {
+		this.path = path;
 	}
 	
 	private void showImageBrowserScreen(String path) {
 		ibi = new ImageBrowserInternalFrame(am, this, path);
 		add(ibi);
 		ibi.setVisible(true);
-		if (am.checkRole(RolesAndPermissions.ADMIN)) {
+		if (am.checkRole(RolesEnum.ADMIN)) {
 			try {
 				ibi.setIcon(true);
 			} catch (PropertyVetoException e) {
@@ -159,10 +147,14 @@ public final class JpicDesktopPane extends JDesktopPane {
 	}
 	
 	protected void showUserEditorScreen(String username) {
-		
+		if (ueif != null) { ueif.dispose(); }
+		ueif = new UserEditorInternalFrame(am, username);
+		add(ueif);
+		ueif.setVisible(true);
 	}
 	
-	protected void showUserAddScreen() {	
+	protected void showUserAddScreen() {
+		if (ueif != null) { ueif.dispose(); }
 		ueif = new UserEditorInternalFrame(am);
 		add(ueif);
 		ueif.setVisible(true);
@@ -173,7 +165,7 @@ public final class JpicDesktopPane extends JDesktopPane {
 		if (am.isAuth()) {
 			showImageBrowserScreen(path);
 		}
-		if (am.checkRole(RolesAndPermissions.ADMIN)) {
+		if (am.checkRole(RolesEnum.ADMIN)) {
 			showAdminControlPanelScreen();
 		}
 	}

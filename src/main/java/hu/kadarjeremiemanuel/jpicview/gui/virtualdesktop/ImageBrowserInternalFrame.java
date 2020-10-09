@@ -3,44 +3,37 @@
  */
 package hu.kadarjeremiemanuel.jpicview.gui.virtualdesktop;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.io.BufferedReader;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
-
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 
 import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
-import hu.kadarjeremiemanuel.jpicview.auth.RolesAndPermissions;
-import hu.kadarjeremiemanuel.jpicview.utils.SharedValues;
+import hu.kadarjeremiemanuel.jpicview.auth.PermissionsEnum;
 
 /**
  * @author atanii
  *
  */
 public final class ImageBrowserInternalFrame extends JInternalFrame {
-	private static AuthManager am;
-	private static JpicDesktopPane dp;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
-	private static File dir;
-	private static File[] files;
+	private AuthManager am;
+	private JpicDesktopPane dp;
 	
-	private JList fileList;
-	private JButton bttOpen;
+	private File dir;
+	private File[] files;
 	
-	private static String path;
+	private JList<File> fileList;
+	
+	private String path;
 	
 	public ImageBrowserInternalFrame(AuthManager am, JpicDesktopPane dp, String path) {
 		super("Available Images", true, false, true, true);
@@ -62,9 +55,9 @@ public final class ImageBrowserInternalFrame extends JInternalFrame {
 					int index = name.lastIndexOf('.');
 					if(index > 0) {
 						String extension = name.substring(index + 1);
-						if ( (extension.equals("png") && am.checkPermission(RolesAndPermissions.PNG.getViewPermission()))
-						 ||  (extension.equals("jpg") && am.checkPermission(RolesAndPermissions.JPG.getViewPermission()))
-						 ||  (extension.equals("gif") && am.checkPermission(RolesAndPermissions.GIF.getViewPermission()))) {
+						if ( (extension.equals("png") && am.checkPermission(PermissionsEnum.PNG.getPermission()))
+						 ||  (extension.equals("jpg") && am.checkPermission(PermissionsEnum.JPG.getPermission()))
+						 ||  (extension.equals("gif") && am.checkPermission(PermissionsEnum.GIF.getPermission()))) {
 							return true;
 						}
 					}
@@ -75,32 +68,53 @@ public final class ImageBrowserInternalFrame extends JInternalFrame {
 	}
 	
 	private void openImage() {
-		File selectedFile = (File) this.fileList.getSelectedValue();
+		var selectedFile = (File) this.fileList.getSelectedValue();
 		dp.showImage(selectedFile.getAbsolutePath());
 	}
 	
 	private void initUI() {
-		setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		
 		fileList = new JList<File>(files);
-		c.fill = GridBagConstraints.BOTH;
-		c.anchor = GridBagConstraints.CENTER;
-		c.gridx = 0;
-		c.gridy = 0;
-		add(new JScrollPane(fileList), c);
+		var fileListWithScrollpane = new JScrollPane(fileList);
 		
-		bttOpen = new JButton("Open Image");
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.anchor = GridBagConstraints.PAGE_END;
-		c.gridx = 0;
-		c.gridy = 1;
-		add(bttOpen, c);
-		
+		var bttOpen = new JButton("Open Image");
 		bttOpen.addActionListener(e -> {
 			openImage();
 		});
 		
-		setSize(300, 300);
+		var pane = getContentPane();
+        var gl = new GroupLayout(pane);
+        pane.setLayout(gl);
+		
+		gl.setHorizontalGroup(
+				gl.createParallelGroup()
+				.addGroup(
+						gl.createSequentialGroup()
+						.addComponent(fileListWithScrollpane)
+				)
+				.addGroup(
+						gl.createSequentialGroup()
+						.addComponent(bttOpen)
+				)
+		);
+		
+		gl.setVerticalGroup(
+				gl.createSequentialGroup()
+				.addGroup(
+						gl.createParallelGroup()
+						.addComponent(fileListWithScrollpane)
+				)
+				.addGroup(
+						gl.createParallelGroup()
+						.addComponent(bttOpen)
+				)
+		);
+		
+		gl.setAutoCreateContainerGaps(true);
+        gl.setAutoCreateGaps(true);
+        
+        var headerSize = getInsets().top;
+        setPreferredSize(new Dimension(getPreferredSize().width, getPreferredSize().height + headerSize * 3));
+		
+		pack();
 	}
 }

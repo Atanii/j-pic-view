@@ -89,7 +89,7 @@ public final class AuthManager {
 		return user.hasRole(role);
 	}
 	
-	public boolean checkRole(RolesAndPermissions role) {
+	public boolean checkRole(RolesEnum role) {
 		setUserAndSession();
 		return user.hasRole(role.getRoleName());
 	}

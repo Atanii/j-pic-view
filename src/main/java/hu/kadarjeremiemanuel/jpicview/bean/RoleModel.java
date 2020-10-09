@@ -7,7 +7,7 @@ package hu.kadarjeremiemanuel.jpicview.bean;
  * @author atanii
  *
  */
-public final class RoleModel {
+public class RoleModel {
 
 	public int id;
 	public String rolename;

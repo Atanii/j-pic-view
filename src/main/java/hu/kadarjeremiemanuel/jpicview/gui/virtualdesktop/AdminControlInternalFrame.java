@@ -94,12 +94,7 @@ public final class AdminControlInternalFrame extends JInternalFrame {
 		this.tUserRoleMatrix.setModel(getModel());
 	}
 	
-	private void initUI() {
-        var pane = getContentPane();
-        var gl = new GroupLayout(pane);
-        pane.setLayout(gl);
-        
-        var table = getUserRoleMatrixTable();
+	private void initUI() {var table = getUserRoleMatrixTable();
         
         var bttNew = new JButton("New User");
 		bttNew.addActionListener(e -> {
@@ -117,6 +112,10 @@ public final class AdminControlInternalFrame extends JInternalFrame {
 		bttRefresh.addActionListener(e -> {
 			refresh();
 		});
+		
+		var pane = getContentPane();
+        var gl = new GroupLayout(pane);
+        pane.setLayout(gl);
 		
 		gl.setVerticalGroup(
 				gl.createParallelGroup()

@@ -4,18 +4,19 @@
 package hu.kadarjeremiemanuel.jpicview.gui.virtualdesktop;
 
 
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.LayoutManager;
-
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
+import hu.kadarjeremiemanuel.jpicview.auth.RolesEnum;
+import hu.kadarjeremiemanuel.jpicview.db.DatabaseHandler;
 
 /**
  * @author atanii
@@ -27,11 +28,13 @@ public final class LoginInternalFrame extends JInternalFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static AuthManager am;
-	private static JpicDesktopPane dp;
+	private AuthManager am;
+	private JpicDesktopPane dp;
 	
-	private JTextField tfName;
-	private JPasswordField tfPswd;
+	private JTextField txtName;
+	private JPasswordField txtPswd;
+	
+	private String path;
 	
 	public LoginInternalFrame(AuthManager am, JpicDesktopPane dp) {
 		super("Login", false, false, false, true);
@@ -40,54 +43,176 @@ public final class LoginInternalFrame extends JInternalFrame {
 		setUI();
 	}
 	
-	private void setUI() {
-		GridLayout gl = new GridLayout(3, 2);
-		setLayout(gl);
+	private void askForFolder(JLabel label) {
+		var jfc = new JFileChooser();
+		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		jfc.setDialogTitle("Choose a directory with images (the program will exit if you cancel)");
 		
+		int res = jfc.showSaveDialog(null); 
+        if (res == JFileChooser.APPROVE_OPTION) { 
+            path = jfc.getSelectedFile().getAbsolutePath();
+            label.setText(path);
+        }
+	}
+	
+	private void setUI() {
 		var lName = new JLabel("Username");
-		add(lName);
-		tfName = new JTextField();
-		add(tfName);
+		txtName = new JTextField();
 		
 		var lPswd = new JLabel("Password");
-		add(lPswd);
-		tfPswd = new JPasswordField();
-		add(tfPswd);
+		txtPswd = new JPasswordField();
+		
+		var bttChooseFolder = new JButton("Choose Folder");
+		var txtPath = new JLabel("FOLDER TO BROWSE");
 		
 		var bttGuest = new JButton("Continue As Guest");
-		add(bttGuest);
 		var bttOk = new JButton("Confirm");
-		add(bttOk);
+		var bttSignup = new JButton("SignUp");
 		
 		bttGuest.addActionListener(e -> {
 			Login(true);
 		});
-		
 		bttOk.addActionListener(e -> {
 			Login(false);
 		});
+		bttSignup.addActionListener(e -> {
+			SignUp();
+		});
+		bttChooseFolder.addActionListener(e -> {
+			askForFolder(txtPath);
+		});
 		
-		setSize(350, 100);
+		var pane = getContentPane();
+        var gl = new GroupLayout(pane);
+        pane.setLayout(gl);
+		
+		gl.setHorizontalGroup(
+				gl.createParallelGroup()
+				.addGroup(
+						gl.createSequentialGroup()
+						.addComponent(lName)
+						.addComponent(txtName)
+				)
+				.addGroup(
+						gl.createSequentialGroup()
+						.addComponent(lPswd)
+						.addComponent(txtPswd)
+				)
+				.addGroup(
+						gl.createSequentialGroup()
+						.addComponent(bttChooseFolder)
+						.addComponent(txtPath)
+				)
+				.addGroup(
+						gl.createSequentialGroup()
+						.addComponent(bttGuest)
+						.addComponent(bttOk)
+						.addComponent(bttSignup)
+				)
+		);
+		
+		gl.setVerticalGroup(
+				gl.createSequentialGroup()
+				.addGroup(
+						gl.createParallelGroup()
+						.addComponent(lName)
+						.addComponent(txtName)
+				)
+				.addGroup(
+						gl.createParallelGroup()
+						.addComponent(lPswd)
+						.addComponent(txtPswd)
+				)
+				.addGroup(
+						gl.createParallelGroup()
+						.addComponent(bttChooseFolder)
+						.addComponent(txtPath)
+				)
+				.addGroup(
+						gl.createParallelGroup()
+						.addComponent(bttGuest)
+						.addComponent(bttOk)
+						.addComponent(bttSignup)
+				)
+		);
+		
+		gl.setAutoCreateContainerGaps(true);
+        gl.setAutoCreateGaps(true);
+        
+        var headerSize = getInsets().top;
+        setPreferredSize(new Dimension(getPreferredSize().width, getPreferredSize().height + headerSize * 3));
+		
+		pack();
 	}
 	
 	private void Login(boolean asGuest) {
 		if (asGuest) {
+			if (path == null) {
+				JOptionPane.showMessageDialog(
+						null,
+						"You have to choose a folder first!",
+						"Login Error",
+						JOptionPane.ERROR_MESSAGE
+				);
+				return;
+			}
 			if (am.login("guest", "guest")) {
+				dp.setPath(path);
 				dp.updateUIOnCredentials();
 				dp.setTitlePostFix("(LOGGED IN AS 'guest')");
-				this.setVisible(false);
+				dispose();
 			}
 		}
-		else if (tfName.getText() != null && tfPswd.getPassword() != null) {
-			String name = tfName.getText();
-			String pswd = String.valueOf(tfPswd.getPassword());
+		if (txtName.getText() != null && txtPswd.getPassword() != null && path != null) {
+			var name = txtName.getText();
+			var pswd = String.valueOf(txtPswd.getPassword());
 			if (am.login(name, pswd)) {
+				dp.setPath(path);
 				dp.updateUIOnCredentials();
 				dp.setTitlePostFix("(LOGGED IN AS '" + name + "')");
-				this.setVisible(false);
+				dispose();
 			}
+		} else {
+			JOptionPane.showMessageDialog(
+					null,
+					"Username, password and folder path are all required!",
+					"Login Error",
+					JOptionPane.ERROR_MESSAGE
+			);
 		}
-		
+	}
+	
+	private void SignUp() {
+		if (txtName.getText() != null && txtPswd.getPassword() != null) {
+			var result = DatabaseHandler.addUser(
+					this.txtName.getText(),
+					String.valueOf(txtPswd.getPassword()),
+					RolesEnum.REGULAR.getRoleName(),
+					am
+			);
+			if (result) {
+				JOptionPane.showMessageDialog(
+						null,
+						"Registration completed successfully, you can now login!",
+						"Registration",
+						JOptionPane.PLAIN_MESSAGE
+				);
+			} else {
+				JOptionPane.showMessageDialog(
+						null,
+						"An error occured while completing registration!",
+						"Registration",
+						JOptionPane.ERROR_MESSAGE
+				);
+			}
+		} else {
+			JOptionPane.showMessageDialog(
+					null,
+					"Both username and password is required!",
+					"Login Error",
+					JOptionPane.ERROR_MESSAGE
+			);
+		}
 	}
 
 }

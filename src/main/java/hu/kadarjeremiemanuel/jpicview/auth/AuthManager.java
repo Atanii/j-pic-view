@@ -3,8 +3,6 @@
  */
 package hu.kadarjeremiemanuel.jpicview.auth;
 
-import javax.swing.JOptionPane;
-
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -17,7 +15,7 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 
-import hu.kadarjeremiemanuel.jpicview.utils.SharedValues;
+import hu.kadarjeremiemanuel.jpicview.utils.JpicConstants;
 
 /**
  * @author atanii
@@ -42,7 +40,7 @@ public final class AuthManager {
 	}
 	
 	private void initSecurity() {
-		Environment env = new BasicIniEnvironment(SharedValues.SHIRO_INI_PATH);
+		Environment env = new BasicIniEnvironment(JpicConstants.SHIRO_INI_PATH);
 		securityManager = env.getSecurityManager();
         SecurityUtils.setSecurityManager(securityManager);
 	}
@@ -53,59 +51,49 @@ public final class AuthManager {
 	}
 	
 	public boolean isAuth() {
-		setUserAndSession();
 		return user.isAuthenticated();
 	}
 	
-	public boolean login(String name, String pswd) {
-		boolean res = isAuth();
-		if (!res) {
+	public AuthCasesEnum login(String name, String pswd) {
+		setUserAndSession();
+		AuthCasesEnum res = isAuth() ? AuthCasesEnum.AUTHENTICATED : AuthCasesEnum.NOT_AUTHENTICATED;
+		if (!res.toBoolean()) {
             UsernamePasswordToken token = new UsernamePasswordToken(name, pswd);
             token.setRememberMe(true);
             try {
                 user.login(token);
-                res = isAuth();
+                setUserAndSession();
+                res = isAuth() ? AuthCasesEnum.AUTHENTICATED : AuthCasesEnum.NOT_AUTHENTICATED;
             } catch (UnknownAccountException uae) {
-            	JOptionPane.showMessageDialog(null, "There is no user with username of " + token.getPrincipal(), "Error", JOptionPane.ERROR_MESSAGE);
-                return false;
+                return AuthCasesEnum.UNKNOWN_ACCOUNT;
             } catch (IncorrectCredentialsException ice) {
-            	JOptionPane.showMessageDialog(null, "Password for account " + token.getPrincipal() + " was incorrect!", "Error", JOptionPane.ERROR_MESSAGE);
-            	return false;
+            	return AuthCasesEnum.INCORRECT_CREDENTIALS;
             } catch (LockedAccountException lae) {
-            	JOptionPane.showMessageDialog(null, "The account for username " + token.getPrincipal() + " is locked.  " +
-                        "Please contact your administrator to unlock it.", "Error", JOptionPane.ERROR_MESSAGE);
-            	return false;
-            }
-            catch (AuthenticationException ex) {
-            	JOptionPane.showMessageDialog(null, "Unexpected error: " + token.getPrincipal(), "Error", JOptionPane.ERROR_MESSAGE);
-            	return false;
+            	return AuthCasesEnum.LOCKED_ACCOUNT;
+            } catch (AuthenticationException ex) {
+            	return AuthCasesEnum.AUTHENTICATION_EXCEPTION;
             }
         }
 		return res;
 	}
 	
 	public boolean checkRole(String role) {
-		setUserAndSession();
 		return user.hasRole(role);
 	}
 	
 	public boolean checkRole(RolesEnum role) {
-		setUserAndSession();
 		return user.hasRole(role.getRoleName());
 	}
 	
 	public boolean checkPermission(String permission) {
-		setUserAndSession();
 		return user.isPermitted(permission);
 	}
 	
 	public void setSessVal(String key, String val) {
-		setUserAndSession();
 		userSess.setAttribute(key, val);
 	}
 	
 	public String getSessVal(String key) {
-		setUserAndSession();
 		return (String) userSess.getAttribute(key);
 	}
 	

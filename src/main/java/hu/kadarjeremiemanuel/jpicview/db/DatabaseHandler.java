@@ -53,13 +53,7 @@ public final class DatabaseHandler {
 	
 	public static final UserModel getUserForEdit(String username) {
 		UserModel userToEdit = null;
-		Connection conn = null;
-        try {
-        	// Get DB
-            var url = JpicConstants.DBPATH;
-            // Connect
-            conn = DriverManager.getConnection(url);
-            
+        try (Connection conn = DriverManager.getConnection(JpicConstants.DBPATH)) {
             // GetUserRoles
             var stmt = conn.prepareStatement(SELECT_USER);
             stmt.setString(1, username);
@@ -74,27 +68,13 @@ public final class DatabaseHandler {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
         }
         return userToEdit;
 	}
 	
 	public static final RoleModel[] getRoles() {
 		var roles = new RoleModel[0];
-		Connection conn = null;
-        try {
-        	// Get DB
-            var url = JpicConstants.DBPATH;
-            // Connect
-            conn = DriverManager.getConnection(url);
-            
+		try (Connection conn = DriverManager.getConnection(JpicConstants.DBPATH)) {
             // GetUserRoles
             var stmt = conn.createStatement();
             stmt.execute(GET_ROLE_COUNT);
@@ -120,27 +100,13 @@ public final class DatabaseHandler {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
         }
         return roles;
 	}
 	
 	public static final Object[][] getUserRoleMatrix() {
 		var dt = new Object[0][0];
-		Connection conn = null;
-        try {
-        	// Get DB
-            var url = JpicConstants.DBPATH;
-            // Connect
-            conn = DriverManager.getConnection(url);
-            
+		try (Connection conn = DriverManager.getConnection(JpicConstants.DBPATH)) {
             // Get Roles
             var stmt = conn.createStatement();
             
@@ -160,26 +126,12 @@ public final class DatabaseHandler {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
         }
         return dt;
 	}
 	
 	public static final boolean deleteUser(String username) {
-		Connection conn = null;
-        try {
-        	// Get DB
-            var url = JpicConstants.DBPATH;
-            // Connect
-            conn = DriverManager.getConnection(url);
-            
+		try (Connection conn = DriverManager.getConnection(JpicConstants.DBPATH)) {            
             // Delete user
             var stmt = conn.prepareStatement(DELETE_USER);
             stmt.setString(1, username);
@@ -189,27 +141,13 @@ public final class DatabaseHandler {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
         }
         return false;
 	}
 	
 	public static final boolean addUser(String username, String plainTextPassword, String rolename) {
-		Connection conn = null;
-        try {
-        	// Get DB
-            var url = JpicConstants.DBPATH;
-            // Connect
-            conn = DriverManager.getConnection(url);
-            
-         // Get Roles
+		try (Connection conn = DriverManager.getConnection(JpicConstants.DBPATH)) {    
+			// Get Roles
             var checkStmt = conn.prepareStatement(GET_USER_COUNT_WITH_NAME);
             checkStmt.execute();
             if (checkStmt.getResultSet().getInt(1) != 0) {
@@ -241,27 +179,12 @@ public final class DatabaseHandler {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-                return false;
-            }
         }
         return true;
 	}
 	
 	public static final boolean updateUser(String username, String newUsername, String rolename, String newRolename) {
-		Connection conn = null;
-        try {
-        	// Get DB
-            var url = JpicConstants.DBPATH;
-            // Connect
-            conn = DriverManager.getConnection(url);
-            
+		try (Connection conn = DriverManager.getConnection(JpicConstants.DBPATH)) {            
             // Update username
             var stmt = conn.prepareStatement(
             		UPDATE_USERNAME
@@ -288,49 +211,25 @@ public final class DatabaseHandler {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-                return false;
-            }
         }
         return true;
 	}
 	
-	public static final boolean checkDbConnection() {
-        Connection conn = null;
-        try {
-        	// Get DB
-            var url = JpicConstants.DBPATH;
-            
-            // Connect
-            conn = DriverManager.getConnection(url);
+	public static final boolean checkDb() {
+		try (Connection conn = DriverManager.getConnection(JpicConstants.DBPATH)) {
+			// Connected
             System.out.println("Connection to SQLite has been established.");
-            
-            // Testquery, it'll fail if there is no database or table.
+            // The query is going to fail if there is no database or table.
             var stmt = conn.createStatement();
-            
+            // User table.
             stmt.execute("SELECT * from user;");
             System.out.println("User table checked!");
-            
+            // Role table.
             stmt.execute("SELECT * from role;");
             System.out.println("Role table checked!");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-                return false;
-            }
         }
         return true;
     }

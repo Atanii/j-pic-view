@@ -12,3 +12,5 @@ JPicView is a authentication based fixed directory image viewer program written 
 - [x] Showing images.
 - [x] Admin can change regular user permissions, add, remove users.
 - [x] Hashed passwords.
+
+![Example screenshot.](example_screenshot.png)

@@ -23,12 +23,12 @@ public final class DatabaseHandler {
 	private DatabaseHandler() {}
 	
 	private static final String SELECT_USER =
-			"SELECT username, rolename from user_role WHERE username = ?;";
+			"SELECT username, rolename from available_user_roles WHERE username = ?;";
 	
 	private static final String GET_ROLE_COUNT =
-			"SELECT count(*) from role WHERE rolename != \"admin\";";
+			"SELECT count(*) from available_roles;";
 	private static final String GET_ROLES =
-			"SELECT * from role WHERE rolename != \"admin\";";
+			"SELECT * from available_roles;";
 	
 	private static final String GET_USER_ROLE_MATRIX_COUNT =
 			"SELECT count(*) from user_role_matrix;";
@@ -36,10 +36,10 @@ public final class DatabaseHandler {
 			"SELECT * from user_role_matrix;";
 	
 	private static final String DELETE_USER =
-			"DELETE FROM user WHERE username = ? AND username != \"admin\" AND username != \"guest\";";
+			"DELETE FROM user WHERE username = ?;";
 	
 	private static final String GET_USER_COUNT_WITH_NAME =
-			"SELECT count(*) from user where username = ?;";
+			"SELECT count(*) from available_users where username = ?;";
 	
 	private static final String INSERT_NEW_USER =
 			"INSERT INTO user (username, password) VALUES (?, ?);";
@@ -47,9 +47,9 @@ public final class DatabaseHandler {
 			"INSERT INTO user_role (username, rolename) VALUES (?, ?);";
 	
 	private static final String UPDATE_USERNAME =
-			"UPDATE user SET username = ? WHERE username = ? AND username != \"admin\" AND username != \"guest\";";
+			"UPDATE user SET username = ? WHERE username = ?;";
 	private static final String UPDATE_USER_ROLE =
-			"UPDATE user_role SET username = ?, rolename = ? WHERE username = ? AND username != \"admin\" AND username != \"guest\" AND rolename != \"admin\" AND rolename != \"guest\";";
+			"UPDATE user_role SET username = ?, rolename = ? WHERE username = ?;";
 	
 	public static final UserModel getUserForEdit(String username) {
 		UserModel userToEdit = null;
@@ -90,11 +90,10 @@ public final class DatabaseHandler {
             int i = 0;
             while (res.next()) {
             	roles[i] = new RoleModel(
-            			res.getInt(1),
+            			res.getString(1),
             			res.getString(2),
             			res.getString(3),
-            			res.getString(4),
-            			res.getString(5)
+            			res.getString(4)
     			);
             	i++;
             }

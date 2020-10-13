@@ -9,7 +9,6 @@ package hu.kadarjeremiemanuel.jpicview.db.bean;
  */
 public class RoleModel {
 
-	public int id;
 	public String rolename;
 	public String permission;
 	public String fullname;
@@ -17,8 +16,7 @@ public class RoleModel {
 	
 	public RoleModel() {}
 	
-	public RoleModel(int id, String rolename, String permission, String fullname, String description) {
-		this.id = id;
+	public RoleModel(String rolename, String permission, String fullname, String description) {
 		this.rolename = rolename;
 		this.permission = permission;
 		this.fullname = fullname;

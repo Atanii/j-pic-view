@@ -1,6 +1,3 @@
-/**
- * 
- */
 package hu.kadarjeremiemanuel.jpicview.auth;
 
 /**

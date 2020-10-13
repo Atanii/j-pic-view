@@ -55,8 +55,6 @@ public final class DatabaseHandler {
 		UserModel userToEdit = null;
 		Connection conn = null;
         try {
-        	// Get JDBC
-        	Class.forName(JpicConstants.JDBC_CLASSPATH);
         	// Get DB
             var url = JpicConstants.DBPATH;
             // Connect
@@ -76,9 +74,7 @@ public final class DatabaseHandler {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
-		} finally {
+        } finally {
             try {
                 if (conn != null) {
                     conn.close();
@@ -94,8 +90,6 @@ public final class DatabaseHandler {
 		var roles = new RoleModel[0];
 		Connection conn = null;
         try {
-        	// Get JDBC
-        	Class.forName(JpicConstants.JDBC_CLASSPATH);
         	// Get DB
             var url = JpicConstants.DBPATH;
             // Connect
@@ -126,9 +120,7 @@ public final class DatabaseHandler {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
-		} finally {
+        } finally {
             try {
                 if (conn != null) {
                     conn.close();
@@ -144,8 +136,6 @@ public final class DatabaseHandler {
 		var dt = new Object[0][0];
 		Connection conn = null;
         try {
-        	// Get JDBC
-        	Class.forName(JpicConstants.JDBC_CLASSPATH);
         	// Get DB
             var url = JpicConstants.DBPATH;
             // Connect
@@ -170,9 +160,7 @@ public final class DatabaseHandler {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
-		} finally {
+        } finally {
             try {
                 if (conn != null) {
                     conn.close();
@@ -187,8 +175,6 @@ public final class DatabaseHandler {
 	public static final boolean deleteUser(String username) {
 		Connection conn = null;
         try {
-        	// Get JDBC
-        	Class.forName(JpicConstants.JDBC_CLASSPATH);
         	// Get DB
             var url = JpicConstants.DBPATH;
             // Connect
@@ -203,9 +189,7 @@ public final class DatabaseHandler {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
-		} finally {
+        } finally {
             try {
                 if (conn != null) {
                     conn.close();
@@ -220,8 +204,6 @@ public final class DatabaseHandler {
 	public static final boolean addUser(String username, String plainTextPassword, String rolename) {
 		Connection conn = null;
         try {
-        	// Get JDBC
-        	Class.forName(JpicConstants.JDBC_CLASSPATH);
         	// Get DB
             var url = JpicConstants.DBPATH;
             // Connect
@@ -259,9 +241,7 @@ public final class DatabaseHandler {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
-        } catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
-		} finally {
+        } finally {
             try {
                 if (conn != null) {
                     conn.close();
@@ -277,8 +257,6 @@ public final class DatabaseHandler {
 	public static final boolean updateUser(String username, String newUsername, String rolename, String newRolename) {
 		Connection conn = null;
         try {
-        	// Get JDBC
-        	Class.forName(JpicConstants.JDBC_CLASSPATH);
         	// Get DB
             var url = JpicConstants.DBPATH;
             // Connect
@@ -310,9 +288,7 @@ public final class DatabaseHandler {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
-        } catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
-		} finally {
+        } finally {
             try {
                 if (conn != null) {
                     conn.close();
@@ -328,9 +304,6 @@ public final class DatabaseHandler {
 	public static final boolean checkDbConnection() {
         Connection conn = null;
         try {
-        	// Get JDBC
-        	Class.forName(JpicConstants.JDBC_CLASSPATH);
-        	
         	// Get DB
             var url = JpicConstants.DBPATH;
             
@@ -349,10 +322,7 @@ public final class DatabaseHandler {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
-        } catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
-			return false;
-		} finally {
+        } finally {
             try {
                 if (conn != null) {
                     conn.close();

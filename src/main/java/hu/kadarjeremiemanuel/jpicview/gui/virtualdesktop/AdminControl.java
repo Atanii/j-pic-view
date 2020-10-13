@@ -4,6 +4,8 @@
 package hu.kadarjeremiemanuel.jpicview.gui.virtualdesktop;
 
 import java.awt.Dimension;
+import java.util.ArrayList;
+
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -12,86 +14,28 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableModel;
-
-import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
 import hu.kadarjeremiemanuel.jpicview.db.DatabaseHandler;
+import hu.kadarjeremiemanuel.jpicview.db.model.UserRoleModel;
+import hu.kadarjeremiemanuel.jpicview.db.model.UserRoleTableModel;
 
 /**
  * @author atanii
  *
  */
-public final class AdminControl extends JInternalFrame {
+public final class AdminControl extends JInternalFrame implements Refreshable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
 	private JTable tUserRoleMatrix;
-	private AuthManager am;
 	private JpicDesktopPane dp;
-	private Object[][] data;
+	private ArrayList<UserRoleModel> data;
 	
-	public AdminControl(AuthManager am, JpicDesktopPane dp) {
-		super("Admin Controlpanel (under implementation)", true, false, true, true);
-		this.am = am;
+	public AdminControl(JpicDesktopPane dp) {
+		super("Admin Controlpanel", true, false, true, true);
 		this.dp = dp;
 		initUI();
-	}
-	
-	private DefaultTableModel getModel() {
-		Object[] columnNames = {"Username", "Role", "Description"};
-        data = DatabaseHandler.getUserRoleMatrix();
-        return new DefaultTableModel(data, columnNames);
-	}
-	
-	private JComponent getUserRoleMatrixTable() {
-        tUserRoleMatrix = new JTable(getModel()) {
-            private static final long serialVersionUID = 1L;
-            
-            @Override
-            public Class<?> getColumnClass(int column) {
-                switch (column) {
-                    case 0:
-                        return Integer.class;
-                    case 1:
-                    case 2:
-                        return String.class;
-                    default:
-                        return Boolean.class;
-                }
-            }
-        };
-        
-        tUserRoleMatrix.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tUserRoleMatrix.setPreferredScrollableViewportSize(tUserRoleMatrix.getPreferredSize());
-        
-        var scrollPane = new JScrollPane(tUserRoleMatrix);
-        return scrollPane;
-	}
-	
-	private void newUser() {
-		dp.showUserAddScreen();
-	}
-	
-	private void editUser() {
-		int row = tUserRoleMatrix.getSelectedRow();
-		if (row != -1) {
-			String username = String.valueOf(data[row][0]);
-			dp.showUserEditorScreen(username);
-		}
-	}
-	
-	private void deleteUser() {
-		int row = tUserRoleMatrix.getSelectedRow();
-		if (row != -1 && JOptionPane.showConfirmDialog(null, "Are you sure?") == 0) {
-			String username = String.valueOf(data[row][0]);
-			DatabaseHandler.deleteUser(username);
-		}
-	}
-	
-	private void refresh() {
-		this.tUserRoleMatrix.setModel(getModel());
 	}
 	
 	private void initUI() {var table = getUserRoleMatrixTable();
@@ -154,5 +98,63 @@ public final class AdminControl extends JInternalFrame {
         setPreferredSize(new Dimension(getPreferredSize().width, getPreferredSize().height + headerSize * 3));
         
         pack();
+        
+        setVisible(true);
     }
+	
+	private UserRoleTableModel getModel() {
+        data = DatabaseHandler.getUserRoleMatrix();
+        return new UserRoleTableModel(data);
+	}
+	
+	private JComponent getUserRoleMatrixTable() {
+        tUserRoleMatrix = new JTable(getModel());
+        
+        tUserRoleMatrix.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tUserRoleMatrix.setPreferredScrollableViewportSize(tUserRoleMatrix.getPreferredSize());
+        
+        var scrollPane = new JScrollPane(tUserRoleMatrix);
+        return scrollPane;
+	}
+	
+	private void newUser() {
+		dp.showUserAddScreen(this);
+	}
+	
+	private void editUser() {
+		int row = tUserRoleMatrix.getSelectedRow();
+		if (row != -1) {
+			String username = String.valueOf(data.get(row).username);
+			dp.showUserEditorScreen(username, this);
+		}
+	}
+	
+	private void deleteUser() {
+		int row = tUserRoleMatrix.getSelectedRow();
+		if (row != -1 && JOptionPane.showConfirmDialog(null, "Are you sure?") == 0) {
+			String username = String.valueOf(data.get(row).username);
+			var result = DatabaseHandler.deleteUser(username);
+			if (result) {
+				JOptionPane.showMessageDialog(
+						null,
+						"User deleted successfully!",
+						"Administration",
+						JOptionPane.PLAIN_MESSAGE
+				);
+				refresh();
+			} else {
+				JOptionPane.showMessageDialog(
+						null,
+						"Error occured while updating user!",
+						"Administration",
+						JOptionPane.ERROR_MESSAGE
+				);
+			}
+		}
+	}
+	
+	@Override
+	public void refresh() {
+		this.tUserRoleMatrix.setModel(getModel());
+	}
 }

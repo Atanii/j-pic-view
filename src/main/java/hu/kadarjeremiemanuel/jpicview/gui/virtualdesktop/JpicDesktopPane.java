@@ -8,8 +8,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JDesktopPane;
-import javax.swing.JOptionPane;
-
 import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
 import hu.kadarjeremiemanuel.jpicview.auth.RolesEnum;
 import hu.kadarjeremiemanuel.jpicview.gui.MainWindow;
@@ -19,7 +17,7 @@ import hu.kadarjeremiemanuel.jpicview.utils.JpicConstants;
  * @author atanii
  *
  */
-public final class JpicDesktopPane extends JDesktopPane {
+public final class JpicDesktopPane extends JDesktopPane implements Refreshable {
 	/**
 	 * 
 	 */
@@ -59,17 +57,11 @@ public final class JpicDesktopPane extends JDesktopPane {
         grphcs.drawImage(wallpaper, 0, 0, null);
     }
 	
-	protected void reset() {
-		removeAll();
-		updateUI();
-		showLoginScreen();
-	}
-	
 	public void setTitlePostFix(String postfix) {
 		mw.setTitlePostFix(postfix);
 	}
 	
-	protected void newImageInternalFrame(String path) {
+	protected void showImageInternalFrame(String path) {
 		add(new SingleImageViewer(path));
 	}
 	
@@ -78,38 +70,27 @@ public final class JpicDesktopPane extends JDesktopPane {
 	}
 	
 	private void showLogoutScreen() {
-		add(new Logout(this));
+		add(new Logout(am, this));
 	}
 	
 	private void showAdminControlPanelScreen() {
-		if (am.checkRole(RolesEnum.ADMIN)) {
-			var acif = new AdminControl(am, this);
-			add(acif);
-			acif.setVisible(true);
-		} else {
-			JOptionPane.showMessageDialog(
-					null,
-					"Only administrators are permitted to access this menu!",
-					"Security",
-					JOptionPane.ERROR_MESSAGE
-			);
-		}
+		add(new AdminControl(this));
 	}
 	
 	private void showImageBrowserScreen(String path) {
 		add(new ImageBrowser(am, this, path));
 	}
 	
-	protected void showUserEditorScreen(String username) {
+	protected void showUserEditorScreen(String username, Refreshable ac) {
 		if (ueif != null) { ueif.dispose(); }
-		ueif = new UserEditor(am, username);
+		ueif = new UserEditor(username, ac);
 		add(ueif);
 		ueif.setVisible(true);
 	}
 	
-	protected void showUserAddScreen() {
+	protected void showUserAddScreen(Refreshable ac) {
 		if (ueif != null) { ueif.dispose(); }
-		ueif = new UserEditor(am);
+		ueif = new UserEditor(ac);
 		add(ueif);
 		ueif.setVisible(true);
 	}
@@ -117,14 +98,19 @@ public final class JpicDesktopPane extends JDesktopPane {
 	protected void setPath(String path) {
 		this.path = path;
 	}
-	
-	protected void updateUIOnCredentials() {
-		showLogoutScreen();
+
+	@Override
+	public void refresh() {
+		removeAll();
+		updateUI();
 		if (am.isAuth()) {
+			showLogoutScreen();
 			showImageBrowserScreen(path);
 			if (am.checkRole(RolesEnum.ADMIN)) {
 				showAdminControlPanelScreen();
 			}
+		} else {
+			showLoginScreen();
 		}
 	}
 	

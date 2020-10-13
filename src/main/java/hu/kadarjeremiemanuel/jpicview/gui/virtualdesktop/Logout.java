@@ -9,6 +9,8 @@ import java.beans.PropertyVetoException;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 
+import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
+
 /**
  * @author atanii
  * 
@@ -21,17 +23,18 @@ public class Logout extends JInternalFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public Logout(JpicDesktopPane dp) {
+	public Logout(AuthManager am, Refreshable desktopPane) {
 		super("Logout", false, false, false, true);
-		initUI(dp);
+		initUI(am, desktopPane);
 	}
 	
-	private void initUI(JpicDesktopPane dp) {
+	private void initUI(AuthManager am, Refreshable desktopPane) {
 		setLayout(new FlowLayout());
 		
 		var bttLogout = new JButton("Logout");
 		bttLogout.addActionListener(e -> {
-			dp.reset();
+			am.logout();
+			desktopPane.refresh();
 		});
 		add(bttLogout);
 		

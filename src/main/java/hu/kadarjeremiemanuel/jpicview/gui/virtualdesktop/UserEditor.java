@@ -15,10 +15,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import hu.kadarjeremiemanuel.jpicview.auth.AuthManager;
 import hu.kadarjeremiemanuel.jpicview.db.DatabaseHandler;
-import hu.kadarjeremiemanuel.jpicview.db.bean.RoleModel;
-import hu.kadarjeremiemanuel.jpicview.db.bean.UserModel;
+import hu.kadarjeremiemanuel.jpicview.db.model.RoleModel;
+import hu.kadarjeremiemanuel.jpicview.db.model.UserModel;
 
 /**
  * @author atanii
@@ -35,27 +34,23 @@ public final class UserEditor extends JInternalFrame {
 	private JPasswordField txtPswd;
 	private JList<RoleModel> liRoles;
 	
-	private AuthManager am;
-	
 	private RoleModel[] roles;
 	private UserModel userToEdit;
 
-	public UserEditor(AuthManager am) {
+	public UserEditor(Refreshable ac) {
 		super("Registrate User", false, true, false, true);
-		this.am = am;
 		roles = DatabaseHandler.getRoles();
-		initUIForNew();
+		initUIForNew(ac);
 	}
 	
-	public UserEditor(AuthManager am, String username) {
+	public UserEditor(String username, Refreshable ac) {
 		super("Edit User", false, true, false, true);
-		this.am = am;
 		roles = DatabaseHandler.getRoles();
 		userToEdit = DatabaseHandler.getUserForEdit(username);
-		initUIForEdit(username);
+		initUIForEdit(username, ac);
 	}
 	
-	private void initUIForNew() {
+	private void initUIForNew(Refreshable ac) {
 		var lName = new JLabel("Username");
 		var lPswd = new JLabel("Password");
 		var lRole = new JLabel("Role");
@@ -83,6 +78,7 @@ public final class UserEditor extends JInternalFrame {
 						"Administration",
 						JOptionPane.PLAIN_MESSAGE
 				);
+				ac.refresh();
 			} else {
 				JOptionPane.showMessageDialog(
 						null,
@@ -163,7 +159,7 @@ public final class UserEditor extends JInternalFrame {
 		pack();
 	}
 	
-	private void initUIForEdit(String username) {
+	private void initUIForEdit(String username, Refreshable ac) {
 		var lName = new JLabel("Username");
 		var lRole = new JLabel("Role");
 		
@@ -187,6 +183,7 @@ public final class UserEditor extends JInternalFrame {
 						"Administration",
 						JOptionPane.PLAIN_MESSAGE
 				);
+				ac.refresh();
 			} else {
 				JOptionPane.showMessageDialog(
 						null,

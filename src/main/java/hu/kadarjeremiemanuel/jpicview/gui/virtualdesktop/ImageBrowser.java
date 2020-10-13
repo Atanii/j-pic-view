@@ -44,34 +44,6 @@ public final class ImageBrowser extends JInternalFrame {
 		initUI();
 	}
 	
-	private void readFiles() {
-		dir = new File(path);
-		if (dir.exists() && dir.isDirectory()) {
-			files = dir.listFiles(new FileFilter() {
-				
-				@Override
-				public boolean accept(File pathname) {
-					String name = pathname.getName();
-					int index = name.lastIndexOf('.');
-					if(index > 0) {
-						String extension = name.substring(index + 1);
-						if ( (extension.equals("png") && am.checkPermission(PermissionsEnum.PNG.getPermission()))
-						 ||  (extension.equals("jpg") && am.checkPermission(PermissionsEnum.JPG.getPermission()))
-						 ||  (extension.equals("gif") && am.checkPermission(PermissionsEnum.GIF.getPermission()))) {
-							return true;
-						}
-					}
-					return false;
-				}
-			});
-		}
-	}
-	
-	private void openImage() {
-		var selectedFile = (File) this.fileList.getSelectedValue();
-		dp.newImageInternalFrame(selectedFile.getAbsolutePath());
-	}
-	
 	private void initUI() {
 		fileList = new JList<File>(files);
 		var fileListWithScrollpane = new JScrollPane(fileList);
@@ -118,5 +90,33 @@ public final class ImageBrowser extends JInternalFrame {
 		pack();
 		
 		setVisible(true);
+	}
+	
+	private void readFiles() {
+		dir = new File(path);
+		if (dir.exists() && dir.isDirectory()) {
+			files = dir.listFiles(new FileFilter() {
+				
+				@Override
+				public boolean accept(File pathname) {
+					String name = pathname.getName();
+					int index = name.lastIndexOf('.');
+					if(index > 0) {
+						String extension = name.substring(index + 1);
+						if ( (extension.equals("png") && am.checkPermission(PermissionsEnum.PNG.getPermission()))
+						 ||  (extension.equals("jpg") && am.checkPermission(PermissionsEnum.JPG.getPermission()))
+						 ||  (extension.equals("gif") && am.checkPermission(PermissionsEnum.GIF.getPermission()))) {
+							return true;
+						}
+					}
+					return false;
+				}
+			});
+		}
+	}
+	
+	private void openImage() {
+		var selectedFile = (File) this.fileList.getSelectedValue();
+		dp.showImageInternalFrame(selectedFile.getAbsolutePath());
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package hu.kadarjeremiemanuel.jpicview.db.bean;
+package hu.kadarjeremiemanuel.jpicview.db.model;
 
 /**
  * @author atanii

@@ -43,18 +43,6 @@ public final class LoginForm extends JInternalFrame {
 		initUI();
 	}
 	
-	private void askForFolder(JLabel label) {
-		var jfc = new JFileChooser();
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		jfc.setDialogTitle("Choose a directory with images (the program will exit if you cancel)");
-		
-		int res = jfc.showSaveDialog(null); 
-        if (res == JFileChooser.APPROVE_OPTION) { 
-            path = jfc.getSelectedFile().getAbsolutePath();
-            label.setText(path);
-        }
-	}
-	
 	private void initUI() {
 		var lName = new JLabel("Username");
 		txtName = new JTextField();
@@ -147,6 +135,18 @@ public final class LoginForm extends JInternalFrame {
 		setVisible(true);
 	}
 	
+	private void askForFolder(JLabel label) {
+		var jfc = new JFileChooser();
+		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		jfc.setDialogTitle("Choose a directory with images (the program will exit if you cancel)");
+		
+		int res = jfc.showSaveDialog(null); 
+        if (res == JFileChooser.APPROVE_OPTION) { 
+            path = jfc.getSelectedFile().getAbsolutePath();
+            label.setText(path);
+        }
+	}
+	
 	private void Login(boolean asGuest) {
 		if (path == null) {
 			JOptionPane.showMessageDialog(
@@ -179,7 +179,7 @@ public final class LoginForm extends JInternalFrame {
 		var authRes = am.login(name, pswd);
 		if (authRes.toBoolean()) {
 			dp.setPath(path);
-			dp.updateUIOnCredentials();
+			dp.refresh();
 			dp.setTitlePostFix("(LOGGED IN AS '" + name + "')");
 			dispose();
 		} else {
@@ -188,7 +188,8 @@ public final class LoginForm extends JInternalFrame {
 	}
 	
 	private void SignUp() {
-		if (txtName.getText() != null && txtPswd.getPassword() != null) {
+		if (txtName.getText() != null && txtPswd.getPassword() != null
+		&&	!txtName.getText().equals("") && !String.valueOf(txtPswd.getPassword()).equals("")) {
 			var result = DatabaseHandler.addUser(
 					this.txtName.getText(),
 					String.valueOf(txtPswd.getPassword()),
